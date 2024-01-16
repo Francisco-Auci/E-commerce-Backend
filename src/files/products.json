@@ -1,0 +1,32 @@
+[
+	{
+		"title": "Mesa",
+		"description": "Mesa de madera",
+		"price": 67890,
+		"category": "home",
+		"thumbnail": "../img2.jpg",
+		"code": "prod2",
+		"stock": 3,
+		"id": "46d90d41-04ec-491e-b8ca-ac2a43120066"
+	},
+	{
+		"title": "silla",
+		"description": "silla de madera",
+		"price": 66890,
+		"category": "home",
+		"thumbnail": "../img3.jpg",
+		"code": "prod3",
+		"stock": 5,
+		"id": "2a682e86-da16-4adf-ab9a-dbfbfa218bbd"
+	},
+	{
+		"title": "colchon",
+		"description": "colchon acolchado",
+		"price": 167890,
+		"category": "home",
+		"thumbnail": "../img5.jpg",
+		"code": "prod4",
+		"stock": 2,
+		"id": "04ecc1ff-603b-4e5a-aec2-4d22ddc8a141"
+	}
+]
