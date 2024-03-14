@@ -47,12 +47,12 @@ router.get(
 );
 
 router.get(
-  "/githubcallback",
-  passport.authenticate("github", { failureRedirect: "/login" }),
+  '/githubcallback',
+  passport.authenticate('github', { scope: ['user:email'], sesion: false }),
   async (req, res) => {
-    req.session.user = req.user;
-    res.redirect("/");
+    console.log(req.user)
+    res.redirect('/views/home')
   }
-);
+)
 
 export { router as userRouter };
