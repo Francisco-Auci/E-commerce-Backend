@@ -2,8 +2,6 @@ const socket = io();
 
 socket.emit("chat: message", "User disconnect");
 
-/*------------------------------------------realTimeProducts------------------------------------------*/
-
 socket.on("initialProducts", (products) => {
   renderProducts(products);
 });

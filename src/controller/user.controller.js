@@ -1,9 +1,13 @@
-import userModel from "../dao/fileSystem/mongodb/models/user.model.js";
-import { createHash, validatePassword } from "../utils.js";
+import { UserDTO } from "../DTOs/user.js";
 
 class UserController {
   static register = async (req, res) => {
-    res.send({ status: "success", message: "User registered successfully" });
+    const user = req.body;
+    const accessToken = generateToken();
+
+    req.session.user = new UserDTO(user);
+
+    return res.status(200).send(accessToken);
   };
 
   static login = async (req, res) => {
@@ -13,11 +17,7 @@ class UserController {
         error: "Datos incorrectos",
       });
     }
-    req.session.user = {
-      fullName: `${req.user.firstName} ${req.user.lastName}`,
-      email: req.user.email,
-      age: req.user.age,
-    };
+    req.session.user = new UserDTO(req.user);
     res.send({ status: "success", payload: req.session.user });
   };
 

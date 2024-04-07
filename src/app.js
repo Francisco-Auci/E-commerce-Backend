@@ -14,23 +14,21 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import inicializePassport from "./config/passport.config.js";
 import passport from "passport";
+import 'dotenv/config';
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 
-const MONGO =
-"mongodb://localhost:27017";
-
-const connection = mongoose.connect(MONGO);
+const connection = mongoose.connect(process.env.MONGO_URL);
 
 app.use(
   session({
     store: new MongoStore({
-      mongoUrl: MONGO,
+      mongoUrl: process.env.MONGO_URL,
     }),
     secret: "1234",
     resave: false,

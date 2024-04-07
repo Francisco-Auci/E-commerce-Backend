@@ -1,67 +1,30 @@
-import { randomUUID } from "crypto";
-import productModel from "../dao/fileSystem/mongodb/models/product.model.js";
+import { UserDTO } from "../DTOs/user.js";
 
-class ProductController {
-  static getProducts = async (req, res) => {
-    const { page = 1, limit = 10, sort, category, status } = req.query;
-    const queryOptions = {};
+class UserController {
+  static register = async (req, res) => {
+    const user = req.body;
+    const accessToken = generateToken();
 
-    if (category) {
-      queryOptions.category = category;
+    req.session.user = new UserDTO(user);
+
+    return res.status(200).send(accessToken);
+  };
+
+  static login = async (req, res) => {
+    if (!req.user) {
+      return res.status(400).send({
+        status: "Error",
+        error: "Datos incorrectos",
+      });
     }
-
-    if (status === "avaliable") {
-      queryOptions.stock = { $gt: 0 };
-    } else if (status === "unavailable") {
-      queryOptions.stock = { $eq: 0 };
-    }
-
-    const products = await productModel.paginate(queryOptions, {
-      limit: limit,
-      page: page ?? 1,
-      sort: sort
-        ? { price: sort === "desc" ? -1 : sort === "asc" ? 1 : 0 }
-        : undefined,
-      lean: true,
-    });
-    res.json(products);
+    req.session.user = new UserDTO(req.user);
+    res.send({ status: "success", payload: req.session.user });
   };
 
-  static getProductById = async (req, res) => {
-    const productsId = await productModel.find(
-      (product) => product.id === req.params.pid
-    );
-    const product = await productModel.findById(productsId);
-
-    if (!product) {
-      res.json({ error: "producto no encontrado" });
-    } else {
-      res.json({ product });
-    }
-  };
-
-  static addProduct = async (req, res) => {
-    const prod = req.body;
-    prod.id = randomUUID();
-    const products = await productModel.create(prod);
-    res.json(products);
-  };
-
-  static updateProduct = async (req, res) => {
-    const productId = req.params.pid;
-    const prod = req.body;
-    const products = await productModel.findByIdAndUpdate(productId, prod);
-    res.send({
-      status: "success",
-      products: products,
-    });
-  };
-
-  static deleteProduct = async (req, res) => {
-    const productId = req.params.pid;
-    const products = await productModel.findByIdAndDelete(productId);
-    res.json(products);
+  static gitHubCallback = async (req, res) => {
+    console.log(req.user);
+    res.redirect("/views/home");
   };
 }
 
-export { ProductController };
+export { UserController };
