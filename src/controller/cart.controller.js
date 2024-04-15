@@ -1,6 +1,6 @@
-import cartModel from "../dao/fileSystem/mongodb/models/cart.model.js";
+import { PurchaseProductDTO } from "../DTOs/purchaseProduct.js";
 import productModel from "../dao/fileSystem/mongodb/models/product.model.js";
-import { cartDao } from "../dao/index.js";
+import { cartDao, ticketDao, userDao } from "../dao/index.js";
 
 class CartController {
   static getCart = async (req, res) => {
@@ -71,7 +71,7 @@ class CartController {
       const { quantity } = req.body;
       const result = await cartDao.updateProdToCart(cid, pid, quantity);
       return res.json({ status: "success", message: result });
-    } catch(error) {
+    } catch (error) {
       return res.status(404).send({ status: "error", message: error.message });
     }
   };
@@ -92,6 +92,56 @@ class CartController {
       const result = await cartDao.deleteProdToCart(cid, pid);
 
       return res.json({ status: "success", message: result });
+    } catch (error) {
+      return res.status(404).send({ status: "error", message: error.message });
+    }
+  };
+
+  static addPurchase = async (req, res) => {
+    const cartId = req.params.cid;
+    try {
+      const cart = await cartDao.getCartById(cartId);
+      let productsToPurchase = []
+
+      if (!cart) {
+        return res
+          .status(404)
+          .send({ status: "error", message: "Cart not found" });
+      }
+
+      if (cart.products.length === 0) {
+        return res
+          .status(404)
+          .send({ status: "error", message: "Cart is empty" });
+      }
+
+      cart.products.forEach((elem) => {
+        if (elem.product.stock >= elem.quantity) {
+          elem.product.stock = elem.product.stock - elem.quantity;
+          productsToPurchase.push(new PurchaseProductDTO(elem.product));
+          cart.products.filter((product) => product != elem);
+        }
+      });
+      console.log(cart);
+
+      let purchasePrice = 0;
+      productsToPurchase.forEach((elem) => {
+        let totalPerElement = elem.price * elem.quantity;
+        purchasePrice += totalPerElement;
+      });
+
+      const user = await userDao.getUserByCart(cart);
+
+      const ticket = {
+        code: Math.floor(Math.random() * 1000000),
+        purchase_datetime: new Date(),
+        amount: cart.totalPrice,
+        purchase: user.email,
+      };
+
+      const newTicket = await ticketDao.createTicket(ticket);
+
+      return res.json({ status: "success", message: newTicket });
     } catch (error) {
       return res.status(404).send({ status: "error", message: error.message });
     }
