@@ -1,3 +1,5 @@
+/*------------------------------------------Login------------------------------------------*/
+
 const form = document.getElementById("loginForm");
 
 let resultOk = false;
@@ -26,6 +28,8 @@ form.addEventListener("submit", (e) => {
     })
     .then((token) => {
       if (resultOk) {
+        console.log(token);
+        console.log(resultOk)
         localStorage.setItem("token", token);
         window.location.replace("/views/users");
       }

@@ -2,7 +2,6 @@
     <h1>
         Products
     </h1>
-
     <ul>
         {{#each products.docs}}
         <li>
@@ -13,6 +12,11 @@
             {{this.stock}}
             {{this.category}}
             {{this.thumbnail}}
+            <form action="/views/products/addToCart" method="post">
+                <label for="cid">Carrito ID</label>
+                <input type="hidden" name="pid" value="{{this._id}}">
+                <button type="submit">agregar al carrito</button>
+            </form>
         </li>
         {{/each}}
     </ul>
@@ -20,13 +24,13 @@
     <div>
         ||
         {{#if products.hasPrevPage}}
-        <a href="/api/products?page={{products.prevPage}}">anterior</a>
+        <a href="/views/products?page={{products.prevPage}}">anterior</a>
         {{/if}}
         ||
         <span>Pagina {{products.page}} de {{products.totalPages}}</span>
         ||
         {{#if products.hasNextPage}}
-        <a href="/api/products?page={{products.nextPage}}">siguiente</a>
+        <a href="/views/products?page={{products.nextPage}}">siguiente</a>
         {{/if}}
         ||
     </div>
